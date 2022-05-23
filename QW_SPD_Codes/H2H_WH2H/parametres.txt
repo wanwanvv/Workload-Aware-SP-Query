@@ -1,0 +1,20 @@
+H2H-directed-manhattan
+-h -d -g D:\linuxData\ManhattanProcess\Manhattan_update.txt -i D:\linuxData\directedExample\directedExample.index  -s D:\linuxData\directedExample\directedExample_ST.data -b D:\linuxData\directedExample\directedExample_ST_block.data -q D:\linuxData\directedExample\queryCost.txt
+
+H2H-directed-example
+-h -d -g D:\linuxData\directedExample\directedExample.graph -i D:\linuxData\directedExample\directedExample.index  -s D:\linuxData\directedExample\directedExample_ST.data -b D:\linuxData\directedExample\directedExample_ST_block.data -q D:\linuxData\directedExample\queryCost.txt
+
+H2H-original-example
+-h -d -g D:\linuxData\example\example.graph -i D:\linuxData\directedExample\directedExample.index  -s D:\linuxData\directedExample\directedExample_ST.data -b D:\linuxData\directedExample\directedExample_ST_block.data -q D:\linuxData\directedExample\queryCost.txt
+
+H2H-directed-NewYork
+-h -d -g D:\linuxData\NewYorkProcess\NewYork_update.txt -i D:\linuxData\directedExample\directedExample.index  -s D:\linuxData\directedExample\directedExample_ST.data -b D:\linuxData\directedExample\directedExample_ST_block.data -q D:\linuxData\directedExample\queryCost.txt
+
+WH2H-directed-example
+-w -d -r 0.5 -e 2 -g D:\linuxData\directedExample\directedExample.graph -v D:\linuxData\directedExample\example.freq -i D:\linuxData\directedExample\directedExample.index -s D:\linuxData\directedExample\directedExample_ST.data -b D:\linuxData\directedExample\directedExample_ST_block.data -q D:\linuxData\directedExample\queryCost.txt
+
+WH2H-directed-NewYork
+-w -d -r 0.5 -e 2 -g D:\linuxData\NewYorkProcess\NewYork_update.txt -v D:\linuxData\NewYorkProcess\NewYork_HFPoint.txt -i D:\linuxData\directedExample\directedExample.index -s D:\linuxData\directedExample\directedExample_ST.data -b D:\linuxData\directedExample\directedExample_ST_block.data -q D:\linuxData\directedExample\queryCost.txt
+
+correctness of queries by ST and ST_block
+-q -d -i D:\linuxData\directedExample\directedExample.index -s D:\linuxData\directedExample\directedExample_ST.data -b D:\linuxData\directedExample\directedExample_ST_block.data

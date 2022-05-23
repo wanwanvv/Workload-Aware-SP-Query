@@ -1,0 +1,135 @@
+Installation:
+make
+
+Execution:
+bin/wcf_du_run
+
+Command Usage: 
+(the first parameter specifies the procedure be executed)
+-------------------------
+1. -e: Delete vertices for a Distance Preserved overlay_graph
+	bin/wcf_du_run -e -d [directedGraphFlag] -w [weightedGraphFlag] -s [experimentFlag] -g [graphFileName] -h [queryFreqFileName] -o [outputDirName] -m [removeMaxDegree] [-i [deleteModel]] [-r [hfRate]] [-t [deleteNodeRate]] [-b [numOfBfsHop]] [-l [initialDegreeOfLocalSearch]] [-c [graphType]]
+-------------------------------------------------------------------
+3. -r: Construct pll in parallel paradigm:
+	bin/wcf_du_run -d [directedGraphFlag] -w [weightedGraphFlag] -g [graphFileName] [-o [orderingModel]] [-b [batchSize]] -a [outputResultPrefixDirName] [-n [numOfThreads]] [-f [inputOrderFileName]] [-m [multithreadFlag]]
+-------------------------------------------------------------------
+3. -z: Construct WCF-Index 2-hop labelings:
+	bin/wcf_du_run -z -d [directedGraphFlag] -w [weightedGraphFlag] -o [coreOrderingModel] -s [experimentFlag] -i [indexingModel] -m [removeMaxDegree] -k [freqParameter] -l [betParameter] [-n [bestRemoveDegree]] -c [numOfThreads] -g [graphFileName] -q [queryFreqFileName] -t [interFileOutputPrefix] -a [outputResultPrefix] -e [outputLabelFileName] -b [outputLabelSizeFileName] [-f [inputOrderFileName]] [-p [isSortFlag]] [-u [graphType]] [-v [queryPairFileName]] [-e [labelSizeFileNam]]
+-----------------------------------------------------------------
+5. -u: Dynamic update labelings:
+	bin/wcf_du_run -u -d [directedGraphFlag] -w [weightedGraphFlag] -s [updateModel] -o [coreOrderingModel] [-x [shuffleFlag]] [-c [numOfThreads]] -e [multiQuery] -m [indexingModel] -y [dayIndex] -n [numOfTimeSlice] -t [greedyUpdateThreshold] -g [graphFileName] [-p [parametersFileName]] -h [queryFreqDirName] -q [queryDataDirName] -l [outputLabelDirName] -b [outputLabelSizeDirName] -i [interFileOutputDirName] [-a [outputResultPrefix]] [-k [updateIndexFileName]]
+-------------------------------------------------------------------
+Parameter explanation:
+	[directedGraphFlag]: 0 or 1, for undirected and directed graphs, default is 0
+	[weightedGraphFlag] = 0 or 1, for unweighted and weighted graphs, default is 0
+	[graphType] = 0: full connected graph (default)
+		      1: u v w, u is start and v is destination
+	[experimentFlag] = 0:default debug model
+			   1:experiment model
+	[hfRate]= user-defined vale of high frequent vertices divided by 10000 [0,10000], default-0 means all read vertices
+	[deleteNodeRate]: user-defined vale of deleted vertices divided by 1000 [0,1000], default-0 means reserve all high frequent vertices
+	[deleteModel] = 0: delete nodes by degree
+ 			1: delete nodes by query freq and degree
+ 			2: delete nodes by query freq and degree optimized with local search
+			3: delete nodes by query freq and degree optimized with local search (parameters for limitation)
+	[removeMaxDegree]: the max degree of nodes to be removed (>=1)
+	[numOfBfsHop]: the bfs search hop limitation for local search (optimization)
+	[initialDegreeOfLocalSearch]: the degree to start local search (optimization)
+	[orderingModel] = 0: given order, need to input order file
+			  1: degree order (default)
+	[batchSize]: batch size for parallel, default is 512
+	[multithreadFlag]: whether use multithread, default is 0
+	[numOfThreads]: num of threads, default is 1
+	[coreOrderingModel] = 0: WHP
+			      1: DHP
+			      2: Given order
+	[indexingModel] = 0: naive WCF-Index (outdated)
+			  1: WCF-Index
+			  2: WCF_variant-Index
+	[bestRemoveDegree] : <=removeMaxDegree, inter overlay graph for minimum indexing
+	[freqParameter] = [0,100], value of parameter beta
+	[betParameter] = 100-freqParameter, weight value of topological importance
+	[isSortFlag] = 0 or 1, reorder the border vertices by frequency, default is 0
+	[shuffleFlag]: 0 or 1, shuffle the order of input query pairs, default is 0
+	[numOfQuery]: num of s-t query pairs, default is 0
+	[multiQuery]: mutiple value of input query pairs, default is 1 (if numQuery != 0, multiQuery is invalid)
+	[dataType] = 0: generate query data random
+		     1: user-defined input query data
+		     2:	generate all s-t pair data for verification
+	[batchQueryFlag]: 0 or 1, batch query input query data which needs to input directory name, default is 0
+	[matchPrefix]: query data prefix (dataType==1&&batchQueryFlag==1)
+	[queryFreqFileName]: predicted query frequency file or directory
+	[queryDataFileName]: query pair file name (dataType==1&&batchQueryFlag==0)
+			     directory containing query pair files (dataType==1&&batchQueryFlag==1)
+	[updateModel] = 0: default debug model
+		       1: experiment model
+		       2: shell model
+		       3: DQN experiment model
+	[numOfTimeSlice]: num of time slices divided
+	[dayIndex]: query data belongs to which day
+	[greedyUpdateThreshold]: priori threshold value
+	[parametersFileName]: the well-tuned indexing parameters at each updating time slice position
+	[updateIndexFileName]: update time slices indexes resulting from DQN, BNB......
+-------------------------------------------------------------------
+Examples:
+1. Delete vertices
+(1) Delete vertices by degree for Example graph
+Undirected:
+	bin/wcf_du_run -e -d 0 -w 1 -s 0 -i 0 -r 0 -g ../Datasets/Example/graph/Example.graph -o ../Experiments/Undirected/overlayGraph/Example/Hf_overlay_graph/Example -a ../Experiments/Undirected/overlayGraph/Example/Result/Example -m 2
+**********************************************************************************************
+Directed:
+	bin/wcf_du_run -e -d 1 -w 1 -s 0 -i 0 -r 0 -g ../Datasets/Example/graph/Example.graph -o ../Experiments/Directed/overlayGraph/Example/Hf_overlay_graph/Example -a ../Experiments/Undirected/overlayGraph/Example/Result/Example -m 5
+
+(2) Delete non designated high frequent vertices for Manhattan graph with local search
+Undirected:
+	bin/wcf_du_run -e -d 0 -w 1 -s 0 -i 3 -r 0 -g ../Datasets/Manhattan/graph/Manhattan.graph -o ../Experiments/Undirected/overlayGraph/Manhattan/Hf_overlay_graph/Manhattan -a ../Experiments/Undirected/overlayGraph/Manhattan/Result/Manhattan -h ../Datasets/Manhattan/freq/day0-cut0.txt -m 20 -b 5 -l 1
+---------------------------------------------------------------------------------------
+2. Construct pll in parallel paradigm 
+(1) Indexing parallelly for Manhattan graph using degree order:
+	bin/wcf_du_run -r -d 0 -w 1 -o 1 -b 512 -m 1 -g ../Datasets/Manhattan/graph/Manhattan.graph -a ../Experiments/Baseline1/Manhattan/DHP/Parallel/Singlethread_Novec_batch/DHP -n 5
+---------------------------------------------------------------------------------------
+
+3. Construct WCF-Index 2-hop labelings
+(1) Construct WCF-Index for Example graph
+Undirected:
+	bin/wcf_du_run -z -d 0 -w 1 -s 0 -r 0 -o 2 -i 1 -g ../Datasets/Example/graph/Example.graph -q ../Datasets/Example/pointFreqDirectory/Example.freq -t ../Experiments/Undirected/integrated_index_1/Example/Inter_files/Example -a ../Experiments/Undirected/integrated_index_1/Example/Result/Example -e ../Experiments/Undirected/integrated_index_1/Example/Labels/Example.label -b ../Experiments/Undirected/integrated_index_1/Example/Label_size/Example.size -f ../Datasets/Example/order/Example_overlay.order -m 10
+**********************************************************************************************
+Directed:
+	bin/wcf_du_run -z -d 1 -w 1 -s 0 -r 0 -o 2 -i 1 -g ../Datasets/Example/graph/Example.graph -q ../Datasets/Example/pointFreqDirectory/Example.freq -v ../Datasets/Example/queryFreqDirectory/Example.query -t ../Experiments/Directed/integrated_index_1/Example/Inter_files/Example -a ../Experiments/Directed/integrated_index_1/Example/Result/Example -e ../Experiments/Directed/integrated_index_1/Example/Labels/Example.label -b ../Experiments/Directed/integrated_index_1/Example/Label_size/Example.size -f ../Datasets/Example/order/Example_overlay.order -m 20
+
+(2) Construct WCF_variant-Index for Example graph
+Undirected:
+	bin/wcf_du_run -z -d 0 -w 1 -s 0 -r 0 -o 2 -i 2 -g ../Datasets/Example/graph/Example.graph -q ../Datasets/Example/pointFreqDirectory/Example.freq -t ../Experiments/Undirected/integrated_index_2/Example/Inter_files/Example -a ../Experiments//Undirected/integrated_index_2/Example/Result/Example -e ../Experiments//Undirected/integrated_index_2/Example/Labels/Example.label -b ../Experiments/Undirected/integrated_index_2/Example/Label_size/Example.size -f ../Datasets/Example/order/Example_overlay.order -m 5
+**********************************************************************************************
+Directed:
+	bin/wcf_du_run -z -d 1 -w 1 -s 0 -r 0 -o 2 -i 2 -g ../Datasets/Example/graph/Example.graph -q ../Datasets/Example/pointFreqDirectory/Example.freq -v ../Datasets/Example/queryFreqDirectory/Example.query -t ../Experiments/Directed/integrated_index_2/Example/Inter_files/Example -a ../Experiments/Directed/integrated_index_2/Example/Result/Example -e ../Experiments/Directed/integrated_index_2/Example/Labels/Example.label -b ../Experiments/Directed/integrated_index_2/Example/Label_size/Example.size -f ../Datasets/Example/order/Example_overlay.order -m 20
+
+(3) Construct WCF-Index for Manhattan graph with parallel optimization
+Undirected:
+	bin/wcf_du_run -z -d 0 -w 1 -s 0 -r 0 -o 0 -i 1 -g ../Datasets/Manhattan/graph/Manhattan.graph -q ../Datasets/Manhattan/freq/day0-cut42.txt -t ../Experiments/Undirected/integrated_index_1/Manhattan/Inter_files/Manhattan -a ../Experiments/Undirected/integrated_index_1/Manhattan/Result/Manhattan -e ../Experiments/Undirected/integrated_index_1/Manhattan/Labels/Manhattan.label -b ../Experiments/Undirected/integrated_index_1/Manhattan/Label_size/Manhattan.size -m 10 -k 40 -l 60 -j 100 -c 5
+
+	bin/wcf_du_run -z -d 0 -w 1 -s 0 -r 0 -o 0 -i 1 -g ../Datasets/Manhattan/graph/Manhattan.graph -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/freq/day21-cut15.txt -t /home/wanwanvv/workspace/research/Experiments_exp/Undirected/integrated_index_1/Manhattan/Inter_files/Manhattan -a /home/wanwanvv/workspace/research/Experiments_exp/Undirected/integrated_index_1/Manhattan/Result/Manhattan -e /home/wanwanvv/workspace/research/Experiments_exp/Undirected/integrated_index_1/Manhattan/Labels/Manhattan.label -b /home/wanwanvv/workspace/research/Experiments_exp/Undirected/integrated_index_1/Manhattan/Label_size/Manhattan.size -v /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query/day21-cut15.txt -m 40 -k 40 -l 60 -j 100 -c 5
+
+	bin/wcf_du_run -l -d 0 -w 1 -p 1 -b 0 -m 1 -s 0 -i /home/wanwanvv/workspace/research/Experiments_exp/Undirected/integrated_index_1/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments_exp/Undirected/integrated_index_1/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments_exp/Undirected/integrated_index_1/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments_exp/Undirected/integrated_index_1/Manhattan/Result/Manhattan -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query/day21-cut15.txt -x 1 -n 100000
+**********************************************************************************************
+Directed:
+	bin/wcf_du_run -z -d 1 -w 1 -s 0 -r 0 -o 0 -i 1 -g ../Datasets/Manhattan/graph/Manhattan.graph -q ../Datasets/Manhattan/freq/day0-cut42.txt -t ../Experiments/Directed/integrated_index_1/Manhattan/Inter_files/Manhattan -a ../Experiments/Directed/integrated_index_1/Manhattan/Result/Manhattan -e ../Experiments/Directed/integrated_index_1/Manhattan/Labels/Manhattan.label -b ../Experiments/Directed/integrated_index_1/Manhattan/Label_size/Manhattan.size -v ../Datasets/Manhattan/query/day0-cut42.txt -m 10 -k 40 -l 60 -j 100 -c 5
+
+	bin/wcf_du_run -z -d 1 -w 1 -s 0 -r 0 -o 0 -i 1 -g ../Datasets/Manhattan/graph/Manhattan.graph -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/freq/day21-cut15.txt -t /home/wanwanvv/workspace/research/Experiments_exp/Directed/integrated_index_1/Manhattan/Inter_files/Manhattan -a /home/wanwanvv/workspace/research/Experiments_exp/Directed/integrated_index_1/Manhattan/Result/Manhattan -e /home/wanwanvv/workspace/research/Experiments_exp/Directed/integrated_index_1/Manhattan/Labels/Manhattan.label -b /home/wanwanvv/workspace/research/Experiments_exp/Directed/integrated_index_1/Manhattan/Label_size/Manhattan.size -v /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query/day21-cut15.txt -m 40 -k 40 -l 60 -j 100 -c 5
+
+	bin/wcf_du_run -l -d 1 -w 1 -p 1 -b 0 -m 1 -s 0 -i /home/wanwanvv/workspace/research/Experiments_exp/Directed/integrated_index_1/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments_exp/Directed/integrated_index_1/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments_exp/Directed/integrated_index_1/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments_exp/Directed/integrated_index_1/Manhattan/Result/Manhattan -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query/day21-cut15.txt -x 1 -n 100000
+
+(4) Construct WCF_variant-Index for Manhattan graph with parallel optimization
+Undirected:
+	bin/wcf_du_run -z -d 0 -w 1 -s 0 -r 0 -o 0 -i 2 -g ../Datasets/Manhattan/graph/Manhattan.graph -q ../Datasets/Manhattan/freq/day0-cut42.txt -t ../Experiments/Undirected/integrated_index_2/Manhattan/Inter_files/Manhattan -a ../Experiments/Undirected/integrated_index_2/Manhattan/Result/Manhattan -e ../Experiments/Undirected/integrated_index_2/Manhattan/Labels/Manhattan.label -b ../Experiments/Undirected/integrated_index_2/Manhattan/Label_size/Manhattan.size -m 10 -k 40 -l 60 -j 100 -n 5
+**********************************************************************************************
+Directed:
+	bin/wcf_du_run -z -d 1 -w 1 -s 0 -r 0 -o 0 -i 2 -g ../Datasets/Manhattan/graph/Manhattan.graph -q ../Datasets/Manhattan/freq/day0-cut42.txt -t ../Experiments/Directed/integrated_index_2/Manhattan/Inter_files/Manhattan -a ../Experiments/Directed/integrated_index_2/Manhattan/Result/Manhattan -e ../Experiments/Directed/integrated_index_2/Manhattan/Labels/Manhattan.label -b ../Experiments/Directed/integrated_index_2/Manhattan/Label_size/Manhattan.size -v ../Datasets/Manhattan/query/day0-cut42.txt -m 10 -k 40 -l 60 -j 100 -n 5
+
+---------------------------------------------------------------------------------------
+5. Dynamic update labelings
+(1) Greedy update and construct WCF-Index and test query performance for Manhattan graph in a day:
+	bin/wcf_du_run -u -d 0 -w 1 -m 1 -n 96 -o 0 -e 10 -x 1 -c 5 -y 0 -g ../Datasets/Manhattan/graph/Manhattan.graph -p ../Datasets/Manhattan/parameters/20%/day0.paras -h ../Datasets/Manhattan/freq_files/20%/ -q ../Datasets/Manhattan/query_files/20%/ -l ../Experiments/GreedyUpdate_1/Manhattan/Labels/ -b ../Experiments/GreedyUpdate_1/Manhattan/Label_size/ -i ../Experiments/GreedyUpdate_1/Manhattan/Inter_files/ -a ../Experiments/GreedyUpdate_1/Manhattan/Result/Manhattan -s 0 -t 9
+
+(2) Construct WCF-Indexes in a day for Manhattan graph directed by DQN:
+	bin/wcf_du_run -u -d 0 -w 1 -s 3 -o 0 -c 5 -m 1 -y 0 -n 96 -g  ../Datasets/Manhattan/graph/Manhattan.graph -p ../Datasets/Manhattan/parameters/1%/day0.paras -h ../Datasets/Manhattan/freq_files/1%/ -l ../Experiments/DQN_based_1/Manhattan/Labels/ -b ../Experiments/DQN_based_1/Manhattan/Label_size/ -i ../Experiments/DQN_based_1/Manhattan/Inter_files/ -a ../Experiments/DQN_based_1/Manhattan/Result/Manhattan -k ../Datasets/Manhattan/update_indexes/1%/DQN_based_1_choosedSlots.txt

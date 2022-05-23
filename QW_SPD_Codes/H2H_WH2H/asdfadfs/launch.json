@@ -1,0 +1,70 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "(gdb) Launch",
+          "type": "cppdbg",   //正在使用的调试器,使用Visual Studio Windows时必须为cppvsdbg,使用GDB或LLDB时必须为cppdbg.
+          "request": "launch",  //表示此配置是用于启动程序还是附加到已运行的实例上
+          "program": "${workspaceFolder}/${fileBasenameNoExtension}.out",   //要执行的可执行文件的完整路径
+          // "args": ["-h", "-d", "-r", "0.2", "-e", "30", "-g", "/data/d/linuxData/mandataProcess/man_roads_Update.txt", 
+          //   "-v", "/data/d/linuxData/mandataProcess/frequency.txt",
+          //   "-i", "/data/d/linuxData/mandataProcess/mandata-H2Hindex.index",
+          //   "-s", "/data/d/linuxData/mandataProcess/mandata_ST.data",
+          //   "-b", "/data/d/linuxData/mandataProcess/mandata_ST_block.data",
+          //   "-q", "/data/d/linuxData/mandataProcess/queryCost.txt"],
+          // "args": ["-h", "-d", "-r", "0.2", "-e", "30", "-g", "/data/d/linuxData/NewYorkProcess/NewYork_update.txt", 
+          //   "-v", "/data/d/linuxData/mandataProcess/frequency.txt",
+          //   "-i", "/data/d/linuxData/mandataProcess/mandata-H2Hindex.index",
+          //   "-s", "/data/d/linuxData/mandataProcess/mandata_ST.data",
+          //   "-b", "/data/d/linuxData/mandataProcess/mandata_ST_block.data",
+          //   "-q", "/data/d/linuxData/mandataProcess/queryCost.txt"],
+          // "args":["-w", "-d", "-r", "0.1", "-e", "15", 
+          //   "-g", "/data/d/linuxData/NewYorkProcess/NewYork_update.txt",
+          //   "-v", "/data/d/linuxData/NewYorkProcess/NewYork_HFPoint.txt",
+          //   "-i", "/data/d/linuxData/directedExample/exampleH2H.index",
+          //   "-s", "/data/d/linuxData/directedExample/exampleST.data",
+          //   "-b", "/data/d/linuxData/directedExample/exampleSTBlock.data",
+          //   "-q", "/data/d/linuxData/directedExample/exampleH2H_queryCost.txt"
+          //   // "-o", "/data/d/linuxData/directedExample/exampleH2H_originalResult.txt",
+          //   // "-f", "/data/d/linuxData/directedExample/example_Result.txt"
+          // ],
+          "args":["-h", "-r", "0.2", "-e", "2", 
+            "-g", "/data/d/linuxData/directedExample_test/example_update_reorder.graph",
+            "-v", "/data/d/linuxData/directedExample_test/example_test_reorder.freq",
+            "-i", "/data/d/linuxData/directedExample/exampleH2H.index",
+            "-s", "/data/d/linuxData/directedExample/exampleST.data",
+            "-b", "/data/d/linuxData/directedExample/exampleSTBlock.data",
+            "-q", "/data/d/linuxData/directedExample/exampleH2H_queryCost.txt"
+            // "-o", "/data/d/linuxData/directedExample/exampleH2H_originalResult.txt",
+            // "-f", "/data/d/linuxData/directedExample/example_Result.txt"
+          ],
+          // "args":["-h", "-d", "-g", 
+          //   "/data/d/linuxData/directedExample/example_update.graph",
+          //   // "/data/d/linuxData/example/example.graph",
+          //   "-v", "/data/d/linuxData/directedExample/example_test.freq",
+          //   "-i", "/data/d/linuxData/directedExample/exampleH2H.index",
+          //   "-s", "/data/d/linuxData/directedExample/exampleST.data",
+          //   "-b", "/data/d/linuxData/directedExample/exampleSTBlock.data",
+          //   "-q", "/data/d/linuxData/directedExample/exampleH2H_queryCost.txt"
+          //   // "-o", "/data/d/linuxData/directedExample/exampleH2H_originalResult.txt",
+          //   // "-f", "/data/d/linuxData/directedExample/example_Result.txt"
+          // ],
+          "stopAtEntry": false,
+          "cwd": "${workspaceFolder}",            //设置调试器启动的应用程序的工作目录
+          "environment": [],
+          "externalConsole": true,
+          "MIMode": "gdb",   //要连接的调试器
+          "preLaunchTask": "build",
+          "setupCommands": [
+              {
+                  "description": "Enable pretty-printing for gdb",
+                  "text": "-enable-pretty-printing",
+                  "ignoreFailures": true
+              }
+          ]
+      }
+  ]
+}

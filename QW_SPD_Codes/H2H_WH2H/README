@@ -1,0 +1,62 @@
+Installation:
+make
+
+Notice:
+Preprocessing is compiled at optimization level O3,
+and query test is compiled at optimization level O0.
+
+Execution:
+bin/run
+
+We write a shell script for running easily.
+chmod u+w test.sh
+chmod 777 test.sh
+./test.sh
+
+Command Usage: 
+(the first parameter specifies the procedure be executed)
+-------------------------------------------------------------------
+(1) -c: Convert graph into undirected graph and test the correctness:
+	run -c -g [graphFileName] -o [outputGraphFileName]);
+-------------------------------------------------------------------
+(2) -h: H2H preprocessing:
+	run -h -g [convertedGraphFileName] -i [outputIndexFileName] -s [outputSTFileName] -b [outputSTBlockFileName] -q [outputQueryCostFileName]
+-------------------------------------------------------------------
+(3) -w: WH2H preprocessing:          
+	run -w -r [gammaValue] -e [etaValue] -g [convertedGraphFileName] -v [HighFrequencyPointFileName] -i [outputIndexFileName] -s [outputSTFileName] -b [outputSTBlockFileName] -q [outputQueryCostFileName]
+-------------------------------------------------------------------
+(4) -q: Query processing: (make sure preprocessing is finished  and just use \"-s\" or \"-b\" as ST table):            
+	run -q -n [numberOfTestPairs] -i [inputIndexFileName] -s [inputSTFileName] -q [inputQueryPairFileName]
+	run -q -n [numberOfTestPairs] -i [inputIndexFileName] -b [inputSTBlockFileName] -q [inputQueryPairFileName]
+-------------------------------------------------------------------
+Parameter explanation:
+	[gammaValue]: 0 to 1
+	[etaValue]: 0 to 100
+	[numberOfTestPairs]: not smaller than the number of queries in [inputQueryPairFile].
+
+-------------------------------------------------------------------
+Examples:
+Convert a graph to undirected graph.
+	run -c -g a.txt a_update.txt
+Preprocessing by H2H.
+	run -h -g a_update.txt -i b.index -s c.data -b d.data -q e.txt
+Preprocessing by WH2H for high frequency vertices in f.txt.
+	run -w -r 0.2 -e 30 -g a_update.txt -v f.txt -i b.index -s c.data -b d.data -q e.txt
+Query process by the index b.index and O(nlogn) ST table c.data by WH2H for 1000000 queries generated from query pairs q.txt.
+	run -q -n 1000000 -i b.index -s c.data q q.txt
+Query process by the index b.index and O(n) ST table c.data by WH2H for 1000000 queries generated from query pairs q.txt.
+	run -q -n 1000000 -i b.index -b c.data q q.txt
+Datasets:
+(example weighted graph)
+0 1 2
+1 3 1
+2 3 3
+3 0 5
+(query frequency pairs)
+4 3
+3 5
+2 6
+(example query pairs)
+0 1 3
+1 4 5
+2 3 4

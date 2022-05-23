@@ -1,0 +1,145 @@
+Installation:
+make clean
+make (-j4)
+(open -O3 optimization for indexing and close it for querying)
+
+Execution:
+bin/pll_whp_run
+
+Command Usage: 
+(the first parameter specifies the procedure be executed)
+-------------------------
+1. -x: Indexing by b ordering schemes:
+	bin/pll_whp_run -x -d [directedGraphFlag] -w [weightedGraphFlag] -s [experimentFlag] -m [orderingSchemes] [-a [s_beta]] -g [graphFileName] -e [outputLabelFileName] -i [outputLabelSizeFileName] [-f [outputResultDirName]] [-q [queryFreqFileName]] [-r [queryPairFileName]] [-b [outputBetweennessFile]] [-c [graphType]]
+-------------------------------------------------------------------
+2. -p: Indexing by custom ordering scheme(WHP):
+	bin/pll_whp_run -p -d [directedGraphFlag] -w [weightedGraphFlag] -s [experimentFlag] -g [graphFileName] -e [exportLabelFileName] [-q [queryFreqFileName]] [-i [labelSizeFileName]] [-f [outputResultDirName]] [-b [betwennessFileName]] [-k [freqParameter]] [-l [betParameter]] [-c [graphType]] [-o [orderWeightFileName]] [-r [queryPairFileName]]
+-------------------------------------------------------------------
+3. -r: Generate different s-t distances query pair data
+	bin/pll_whp_run -r  -d [directedGraphFlag] -w [weightedGraphFlag] -g [graphFileName] -t [numOfThreads]  -n [numOfData] -a [outputResultDirName]  -c [graphType] -m [generateModel] -k [numOfSets]
+
+Parameter explanation:
+	[graphType] = 0: full connected graph (default)
+		      1: u v w, u is start and v is destination
+	[directedGraphFlag]: 0 or 1, for undirected and directed graphs, default is 0
+	[weightedGraphFlag] = 0 or 1, for unweighted and weighted graphs, default is 0
+	[orderingSchemes] = 0: DHP 
+ 			    1: BHP
+ 			    2: SHP
+			    3: Given order
+			    4: RHP
+			    5: FHP
+	[s_beta]: [Optional]trade-off parameter for BHP, default is 1
+	[experimentFlag] = 0:default debug model
+			   1:experiment model
+	[queryFreqFileName]: predicted query frequency for each vertex
+ 	[queryPairFileName]: preditecd query frequency for each query (s,t)
+	[outputBetweennessFile]: betweeness output filename
+	[freqParameter] = [0,100], value of parameter beta
+	[betParameter] = 100-freqParameter, weight value of topological importance
+	[outputBetweennessFile]: optional, output the betweeness values
+	[betwennessFileName]: betweenness value of each vertex computed once before
+	[orderWeightFileName]: optional, output the order values for debug
+Examples:
+---------------------------------------------------------------------------------------
+1. PLL Indexing
+(1) Using example graph for indexing with DHP
+Undirected:
+	bin/pll_whp_run -x -d 0 -w 1 -s 0 -m 0 -g ../Datasets/Example/graph/Example.graph -e ../Experiments/Undirected/Baseline1/Example/DHP/Labels/DHP.label -f ../Experiments/Undirected/Baseline1/Example/DHP/Result/DHP -i ../Experiments/Undirected/Baseline1/Example/DHP/Label_size/DHP.size -q ../Datasets/Example/pointFreqDirectory/Example.freq
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -x -d 1 -w 1 -s 0 -m 0 -g ../Datasets/Example/graph/Example.graph -e ../Experiments/Directed/Baseline1/Example/DHP/Labels/DHP.label -f ../Experiments/Directed/Baseline1/Example/DHP/Result/DHP -i ../Experiments/Directed/Baseline1/Example/DHP/Label_size/DHP.size -q ../Datasets/Example/pointFreqDirectory/Example.freq -r ../Datasets/Example/queryFreqDirectory/Example.query
+
+(2) Using Example graph for indexing with SHP
+Undirected:
+	bin/pll_whp_run -x -d 0 -w 1 -s 0 -m 2 -g ../Datasets/Example/graph/Example.graph -e ../Experiments/Undirected/Baseline1/Example/SHP/Labels/SHP.label -f ../Experiments/Undirected/Baseline1/Example/SHP/Result/SHP -i ../Experiments/Undirected/Baseline1/Example/SHP/Label_size/SHP.size -q ../Datasets/Example/pointFreqDirectory/Example.freq
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -x -d 1 -w 1 -s 0 -m 2 -g ../Datasets/Example/graph/Example.graph -e ../Experiments/Directed/Baseline1/Example/SHP/Labels/SHP.label -f ../Experiments/Directed/Baseline1/Example/SHP/Result/SHP -i ../Experiments/Directed/Baseline1/Example/SHP/Label_size/SHP.size -q ../Datasets/Example/pointFreqDirectory/Example.freq -r ../Datasets/Example/queryFreqDirectory/Example.query
+
+(3) Using Example graph for indexing with BHP
+Undirected:
+	bin/pll_whp_run -x -d 0 -w 1 -s 0 -m 1 -g ../Datasets/Example/graph/Example.graph -e ../Experiments/Undirected/Baseline1/Example/BHP/Labels/BHP.label -f ../Experiments/Undirected/Baseline1/Example/BHP/Result/BHP -i ../Experiments/Undirected/Baseline1/Example/BHP/Label_size/BHP.size -q ../Datasets/Example/pointFreqDirectory/Example.freq (-b ../Datasets/Example/order_values/original)
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -x -d 1 -w 1 -s 0 -m 1 -g ../Datasets/Example/graph/Example.graph -e ../Experiments/Directed/Baseline1/Example/BHP/Labels/BHP.label -f ../Experiments/Directed/Baseline1/Example/BHP/Result/BHP -i ../Experiments/Directed/Baseline1/Example/BHP/Label_size/BHP.size -q ../Datasets/Example/pointFreqDirectory/Example.freq -r ../Datasets/Example/queryFreqDirectory/Example.query (-b ../Datasets/Example/order_values/original_directed)
+
+(4) Using Manhattan graph for indexing with DHP
+Undirected:
+	bin/pll_whp_run -x -d 0 -w 1 -s 0 -m 0 -g ../Datasets/Manhattan/graph/Manhattan.graph -e ../Experiments/Undirected/Baseline1/Manhattan/DHP/Labels/dhp.label -f ../Experiments/Undirected/Baseline1/Manhattan/DHP/Result/DHP -i ../Experiments/Undirected/Baseline1/Manhattan/DHP/Label_size/DHP.size
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -x -d 1 -w 1 -s 0 -m 0 -g ../Datasets/Manhattan/graph/Manhattan.graph -e ../Experiments/Directed/Baseline1/Manhattan/DHP/Labels/DHP.label -f ../Experiments/Directed/Baseline1/Manhattan/DHP/Result/DHP -i ../Experiments/Directed/Baseline1/Manhattan/DHP/Label_size/DHP.size
+
+(5) Using Manhattan graph for indexing with BHP
+Undirected:
+	bin/pll_whp_run -x -d 0 -w 1 -s 0 -m 1 -g ../Datasets/Manhattan/graph/Manhattan.graph -e ../Experiments/Undirected/Baseline1/Manhattan/BHP/Labels/BHP.label -f ../Experiments/Undirected/Baseline1/Manhattan/BHP/Result/BHP -i ../Experiments/Undirected/Baseline1/Manhattan/BHP/Label_size/BHP.size -q ../Datasets/Manhattan/freq/day10-cut0.txt (-b ../Datasets/Example/order_values/original)
+
+	bin/pll_whp_run -x -d 0 -w 1 -s 0 -m 1 -g ../Datasets/Florida/graph/Florida.graph -e ../Experiments/Undirected/Baseline1/Florida/BHP/Labels/BHP.label -f ../Experiments/Undirected/Baseline1/Florida/BHP/Result/BHP -i ../Experiments/Undirected/Baseline1/Florida/BHP/Label_size/BHP.size
+
+	bin/pll_whp_run -x -d 0 -w 1 -s 0 -m 1 -g ../Datasets/California/graph/California.graph -e ../Experiments/Undirected/Baseline1/California/BHP/Labels/BHP.label -f ../Experiments/Undirected/Baseline1/California/BHP/Result/BHP -i ../Experiments/Undirected/Baseline1/California/BHP/Label_size/BHP.size
+
+	bin/pll_whp_run -x -d 0 -w 1 -s 0 -m 1 -g ../Datasets/Chicago/graph/Chicago.graph -e ../Experiments/Undirected/Baseline1/Chicago/BHP/Labels/BHP.label -f ../Experiments/Undirected/Baseline1/Chicago/BHP/Result/BHP -i ../Experiments/Undirected/Baseline1/Chicago/BHP/Label_size/BHP.size -b ../Datasets/Chicago/order_values/original
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -x -d 1 -w 1 -s 0 -m 1 -g ../Datasets/Manhattan/graph/Manhattan.graph -e ../Experiments/Directed/Baseline1/Manhattan/BHP/Labels/BHP.label -f ../Experiments/Directed/Baseline1/Manhattan/BHP/Result/BHP -i ../Experiments/Directed/Baseline1/Manhattan/BHP/Label_size/BHP.size -q ../Datasets/Manhattan/freq/day0-cut42.txt -r ../Datasets/Manhattan/query/day10-cut0.txt (-b ../Datasets/Manhattan/order_values/original_directed)
+
+	bin/pll_whp_run -x -d 1 -w 1 -s 0 -m 1 -g ../Datasets/Florida/graph/Florida.graph -e ../Experiments/Directed/Baseline1/Florida/BHP/Labels/BHP.label -f ../Experiments/Directed/Baseline1/Florida/BHP/Result/BHP -i ../Experiments/Directed/Baseline1/Florida/BHP/Label_size/BHP.size 
+
+	bin/pll_whp_run -x -d 1 -w 1 -s 0 -m 1 -g ../Datasets/California/graph/California.graph -e ../Experiments/Directed/Baseline1/California/BHP/Labels/BHP.label -f ../Experiments/Directed/Baseline1/California/BHP/Result/BHP -i ../Experiments/Directed/Baseline1/California/BHP/Label_size/BHP.size -b ../Datasets/Manhattan/order_values/original_directed
+
+	bin/pll_whp_run -x -d 1 -w 1 -s 0 -m 1 -g ../Datasets/Chicago/graph/Chicago.graph -e ../Experiments/Directed/Baseline1/Chicago/BHP/Labels/BHP.label -f ../Experiments/Directed/Baseline1/Chicago/BHP/Result/BHP -i ../Experiments/Directed/Baseline1/Chicago/BHP/Label_size/BHP.size -b ../Datasets/Chicago/order_values/original_directed
+---------------------------------------------------------------------------------------
+
+(6) Using Manhattan graph for indexing with RHP (EXPERIMENT_FLAG==1)
+Undirected:
+	bin/pll_whp_run -x -d 0 -w 1 -s 1 -m 4 -g ../Datasets/Manhattan/graph/Manhattan.graph -e ../Experiments/Undirected/Baseline1/Manhattan/RHP/Labels/RHP.label -f ../Experiments/Undirected/Baseline1/Manhattan/RHP/Result/RHP.time -i ../Experiments/Undirected/Baseline1/Manhattan/RHP/Label_size/RHP.size
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -x -d 1 -w 1 -s 1 -m 4 -g ../Datasets/Manhattan/graph/Manhattan.graph -e ../Experiments/Directed/Baseline1/Manhattan/RHP/Labels/RHP.label -f ../Experiments/Directed/Baseline1/Manhattan/RHP/Result/RHP.time -i ../Experiments/Directed/Baseline1/Manhattan/RHP/Label_size/RHP.size
+---------------------------------------------------------------------------------------
+
+(7) Using Manhattan graph for indexing with FHP (EXPERIMENT_FLAG==1)
+Undirected:
+	bin/pll_whp_run -x -d 0 -w 1 -s 1 -m 5 -g ../Datasets/Manhattan/graph/Manhattan.graph -e ../Experiments/Undirected/Baseline1/Manhattan/FHP/Labels/FHP.label -f ../Experiments/Undirected/Baseline1/Manhattan/FHP/Result/FHP.time -i ../Experiments/Undirected/Baseline1/Manhattan/FHP/Label_size/FHP.size -q ../Datasets/Manhattan/freq/day10-cut0.txt
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -x -d 1 -w 1 -s 1 -m 5 -g ../Datasets/Manhattan/graph/Manhattan.graph -e ../Experiments/Directed/Baseline1/Manhattan/FHP/Labels/FHP.label -f ../Experiments/Directed/Baseline1/Manhattan/FHP/Result/FHP.time -i ../Experiments/Directed/Baseline1/Manhattan/FHP/Label_size/FHP.size -q ../Datasets/Manhattan/freq/day10-cut0.txt
+---------------------------------------------------------------------------------------
+
+2. WHP Indexing
+(1) Using Example graph for indexing with WHP
+Undirected:
+	bin/pll_whp_run -p -d 0 -w 1 -s 0 -g ../Datasets/Example/graph/Example.graph -b ../Datasets/Example/order_values/original.betweenness -q ../Datasets/Example/pointFreqDirectory/Example.freq -e ../Experiments/Undirected/Baseline1/Example/WHP/Labels/WHP.label -i ../Experiments/Undirected/Baseline1/Example/WHP/Label_size/WHP_update.size -f ../Experiments/Undirected/Baseline1/Example/WHP/Result/WHP_update -k 60 -l 40 -j 100
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -p -d 1 -w 1 -s 0 -g ../Datasets/Example/graph/Example.graph -b ../Datasets/Example/order_values/original_directed.betweenness -q ../Datasets/Example/pointFreqDirectory/Example.freq -r ../Datasets/Example/queryFreqDirectory/Example.query -e ../Experiments/Directed/Baseline1/Example/WHP/Labels/WHP.label -i ../Experiments/Directed/Baseline1/Example/WHP/Label_size/WHP.size -f ../Experiments/Directed/Baseline1/Example/WHP/Result/WHP -k 60 -l 40 -j 100
+
+(2) Using Manhattan graph for indexing with WHP
+Undirected:
+	bin/pll_whp_run -p -d 0 -w 1 -s 0 -g ../Datasets/Manhattan/graph/Manhattan.graph -b ../Datasets/Manhattan/order_values/original.betweenness -q ../Datasets/Manhattan/freq/day10-cut0.txt -e ../Experiments/Undirected/Baseline1/Manhattan/WHP/Labels/WHP.label -i ../Experiments/Undirected/Baseline1/Manhattan/WHP/Label_size/WHP.size -f ../Experiments/Undirected/Baseline1/Manhattan/WHP/Result/WHP -o ../Experiments/Undirected/Baseline1/Manhattan/WHP/Result/WHP -k 40 -l 60 -j 100
+
+	bin/pll_whp_run -p -d 0 -w 1 -s 2 -g ../Datasets/Florida/graph/Florida.graph -b ../Datasets/Florida/order_values/original.betweenness -q ../Datasets/Florida/exp1_skewness_qtime/freq/skew_0.txt -e ../Experiments/Undirected/Baseline1/Florida/WHP/Labels/Florida.label -f ../Experiments/Undirected/Baseline1/Florida/WHP/Result/WHP -k 10 -l 90 -j 100
+
+	bin/pll_whp_run -p -d 0 -w 1 -s 2 -g ../Datasets/California/graph/California.graph -b ../Datasets/California/order_values/original.betweenness -q ../Datasets/California/exp1_skewness_qtime/freq/skew_0.txt -e ../Experiments/Undirected/Baseline1/California/WHP/Labels/California.label -f ../Experiments/Undirected/Baseline1/California/WHP/Result/WHP -k 10 -l 90 -j 100
+**********************************************************************************************
+Directed:
+	bin/pll_whp_run -p -d 1 -w 1 -s 0 -g ../Datasets/Manhattan/graph/Manhattan.graph -b ../Datasets/Manhattan/order_values/original_directed.betweenness -q ../Datasets/Manhattan/freq/day10-cut0.txt -r ../Datasets/Manhattan/query/day10-cut0.txt -e ../Experiments/Directed/Baseline1/Manhattan/WHP/Labels/WHP.label -i ../Experiments/Directed/Baseline1/Manhattan/WHP/Label_size/WHP.size -f ../Experiments/Directed/Baseline1/Manhattan/WHP/Result/WHP -o ../Experiments/Directed/Baseline1/Manhattan/WHP/Result/WHP -k 40 -l 60 -j 100
+
+	bin/pll_whp_run -p -d 1 -w 1 -s 2 -g ../Datasets/Florida/graph/Florida.graph -b ../Datasets/Florida/order_values/original_directed.betweenness -q ../Datasets/Florida/exp1_skewness_qtime/freq/skew_0.txt -e ../Experiments/Directed/Baseline1/Florida/WHP/Labels/WHP.label -i ../Experiments/Directed/Baseline1/Florida/WHP/Label_size/WHP.size -f ../Experiments/Directed/Baseline1/Florida/WHP/Result/WHP -o ../Experiments/Directed/Baseline1/Florida/WHP/Result/WHP -k 10 -l 90 -j 100
+---------------------------------------------------------------------------------------
+
+3. Generate query data
+(1) Generate different query distances(model_0)
+Undirected:
+	bin/pll_whp_run -r -d 0 -w 1 -s 0 -m 0 -c 0 -k 10 -t 5 -n 10000 -g ../Datasets/Manhattan/graph/Manhattan.graph -a ../Datasets/Manhattan/query/varying_distances/
+
+(1) Generate different query distances(model_1)
+Undirected:
+	bin/pll_whp_run -r -d 0 -w 1 -s 0 -m 1 -c 0 -k 10 -t 5 -n 10000 -g ../Datasets/Manhattan/graph/Manhattan.graph -a ../Datasets/Manhattan/query/varying_distances/
+	
+	bin/pll_whp_run -r -d 0 -w 1 -s 0 -m 1 -c 0 -k 10 -t 5 -n 10000 -g ../Datasets/Florida/graph/Florida.graph -a ../Datasets/Florida/query/varying_distances/
+
+	bin/pll_whp_run -r -d 0 -w 1 -s 0 -m 1 -c 0 -k 10 -t 5 -n 10000 -g ../Datasets/California/graph/California.graph -a ../Datasets/California/query/varying_distances/
+**********************************************************************************************
+Directed:

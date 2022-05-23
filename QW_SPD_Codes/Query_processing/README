@@ -1,0 +1,185 @@
+Installation:
+make clean
+make (-j4)
+(open -O3 optimization for indexing and close it for querying)
+
+Execution:
+bin/query_run
+
+Command Usage: 
+(the first parameter specifies the procedure be executed)
+-------------------------------------------------------------------
+1. -q: Query shortest path distance using 2-hop labels (PLL and WHP):
+	bin/query_run -q -d [directedGraphFlag] -w [weightedGraphFlag] -s [experimentFlag] -p [dataType] -b [batchQueryFlag] -l [inputLabelFileName] [-t [queryPairFileName]] [-a [outputResultDirName]] [-f [outputDistanceFileName]] [-z [inputLabelSizeFileName]] [-u [multiQuery]] [-n [numOfQuery]] [-x [shuffleFlag]]
+-------------------------------------------------------------------
+2. -l: Query sp distance using WCF-Index:
+	bin/query_run -l -d [directedGraphFlag] -w [weightedGraphFlag] -p [dataType] -b [batchQueryFlag] -s [experimentFlag] [-x [shuffleFlag]] [-n [numOfQuery]] [-u [multiQuery]] -m [indexingModel] -i [inputLabelFileName] -v [lcaFileName] -y [isDeletedFileName] [-a [outputResultPrefix]] [-q [queryDataFileName]] [-f [outputDistanceFileName]] [-j [matchPrefix]]
+-------------------------------------------------------------------
+
+Parameter explanation:
+	[-c [graphType]] = 0: full connected graph (default)
+			   1: u v w, u is start and v is destination
+	[directedGraphFlag]: 0 or 1, for undirected and directed graphs, default is 0
+	[weightedGraphFlag] = 0 or 1, for unweighted and weighted graphs, default is 0
+	[experimentFlag] = 0:default debug model
+			   1:experiment model
+			   2: spatial 
+                           3: spatial temporal
+                           4: k label sets spatial
+	[shuffleFlag]: 0 or 1, shuffle the order of input query pairs, default is 0
+	[numOfQuery]: num of s-t query pairs, default is 0
+	[multiQuery]: mutiple value of input query pairs, default is 1 (if numQuery != 0, multiQuery is invalid)
+	[dataType] = 0: generate query data random
+		     1: user-defined input query data
+		     2:	generate all s-t pair data for verification
+	[batchQueryFlag]: 0 or 1, batch query input query data which needs to input directory name, default is 0
+	[matchPrefix]: query data prefix (dataType==1&&batchQueryFlag==1)
+	[queryDataFileName]: query pair file name (dataType==1&&batchQueryFlag==0)
+			     directory containing query pair files (dataType==1&&batchQueryFlag==1)
+	[updateModel] = 0: default debug model
+		       1: experiment model
+		       2: shell model
+		       3: DQN experiment model
+	[numOfTimeSlice]: num of time slices divided
+	[dayIndex]: query data belongs to which day
+	[greedyUpdateThreshold]: priori threshold value
+	[parametersFileName]: the well-tuned indexing parameters at each updating time slice position
+	[updateIndexFileName]: update time slices indexes resulting from DQN, BNB......
+
+Examples:
+-------------------------------------------------------------------
+1. Query shortest path distance using 2-hop labels (PLL and WHP)
+(1) Query SP distances of random generated query data with BHP for Exapmle graph
+Undirected:
+	bin/query_run -q -d 0 -w 1 -s 0 -p 0 -l ../Experiments/Undirected/Baseline1/Example/BHP/Labels/BHP.label -a ../Experiments/Undirected/Baseline1/Example/BHP/Result/random_query -n 100000
+**********************************************************************************************
+Directed:
+	bin/query_run -q -d 1 -w 1 -s 0 -p 0 -l ../Experiments/Directed/Baseline1/Example/BHP/Labels/BHP.label -a ../Experiments/Directed/Baseline1/Example/BHP/Result/random_query -n 100000 -x 1
+
+(2) Query SP distances of simulation data with BHP for Example graph
+Undirected:
+	bin/query_run -q -d 0 -w 1 -s 0 -p 2 -l ../Experiments/Undirected/Baseline1/Example/BHP/Labels/BHP.label -a ../Experiments/Undirected/Baseline1/Example/BHP/Result/simu_query -n 100000
+**********************************************************************************************
+Directed:
+	bin/query_run -q -d 1 -w 1 -s 0 -p 2 -l ../Experiments/Directed/Baseline1/Example/BHP/Labels/BHP.label -a ../Experiments/Directed/Baseline1/Example/BHP/Result/simu_query -n 100000
+
+(3) Query SP distances of input query data with BHP for Example graph
+Undirected:
+	bin/query_run -q -d 0 -w 1 -s 0 -p 1 -l ../Experiments/Undirected/Baseline1/Example/BHP/Labels/BHP.label -t ../Datasets/Example/queryFreqDirectory/Example.query -i ../Datasets/Example/pointFreqDirectory/Example.freq -a ../Experiments/Undirected/Baseline1/Example/BHP/Result/real_query -f ../Experiments/Undirected/Baseline1/Example/BHP/Result/real_query -z ../Experiments/Undirected/Baseline1/Example/BHP/Label_size/BHP.size -n 100000 -x 1
+**********************************************************************************************
+Directed:
+	bin/query_run -q -d 1 -w 1 -s 0 -p 1 -l ../Experiments/Directed/Baseline1/Example/BHP/Labels/BHP.label -t ../Datasets/Example/queryFreqDirectory/Example.query -a ../Experiments/Directed/Baseline1/Example/BHP/Result/real_query -f ../Experiments/Directed/Baseline1/Example/BHP/Result/real_query -z ../Experiments/Directed/Baseline1/Example/BHP/Label_size/BHP.size -n 100000 -x 1
+
+(4) Query SP distances of input query data with BHP for Manhattan graph
+Undirected:
+	bin/query_run -q -d 0 -w 1 -s 0 -p 1 -l ../Experiments/Undirected/Baseline1/Manhattan/BHP/Labels/BHP.label -t ../Datasets/Manhattan/query/day0-cut42.txt -a ../Experiments/Undirected/Baseline1/Manhattan/BHP/Result/real_query -f ../Experiments/Undirected/Baseline1/Manhattan/BHP/Result/real_query -z ../Experiments/Undirected/Baseline1/Manhattan/BHP/Label_size/BHP.size -n 100000 -x 1
+**********************************************************************************************
+Directed:
+	bin/query_run -q -d 1 -w 1 -s 0 -p 1 -l ../Experiments/Directed/Baseline1/Manhattan/BHP/Labels/BHP.label -t ../Datasets/Manhattan/query/day0-cut42.txt -a ../Experiments/Directed/Baseline1/Manhattan/BHP/Result/real_query -f ../Experiments/Directed/Baseline1/Manhattan/BHP/Result/real_query -z ../Experiments/Directed/Baseline1/Manhattan/BHP/Label_size/BHP.size -n 100000 -x 1
+
+(5) Query SP distances of input query data with WHP for Example graph
+	bin/query_run -q -d 0 -w 1 -s 0 -p 1 -l ../Experiments/Undirected/Baseline1/Example/WHP/Labels/WHP.label -t ../Datasets/Example/queryFreqDirectory/Example.query -a ../Experiments/Undirected/Baseline1/Example/WHP/Result/real_query -f ../Experiments/Undirected/Baseline1/Example/WHP/Result/real_query -z ../Experiments/Undirected/Baseline1/Example/WHP/Label_size/WHP.size -n 100000 -x 1
+**********************************************************************************************
+Directed:
+	bin/query_run -q -d 1 -w 1 -s 0 -p 1 -l ../Experiments/Directed/Baseline1/Example/WHP/Labels/WHP.label -t ../Datasets/Example/queryFreqDirectory/Example.query -a ../Experiments/Directed/Baseline1/Example/WHP/Result/real_query -f ../Experiments/Directed/Baseline1/Example/WHP/Result/real_query -z ../Experiments/Directed/Baseline1/Example/WHP/Label_size/WHP.size -n 100000 -x 1
+
+(6) Query SP distances of input query data with WHP for Manhattan graph
+	bin/query_run -q -d 0 -w 1 -s 0 -p 1 -l ../Experiments/Undirected/Baseline1/Manhattan/WHP/Labels/WHP.label -t ../Datasets/Manhattan/query/day0-cut42.txt -z ../Experiments/Undirected/Baseline1/Manhattan/WHP/Label_size/WHP.size -n 100000 -x 1
+**********************************************************************************************
+Directed:
+	bin/query_run -q -d 1 -w 1 -s 0 -p 1 -l ../Experiments/Directed/Baseline1/Manhattan/WHP/Labels/WHP.label -t ../Datasets/Manhattan/query/day0-cut42.txt -a ../Experiments/Directed/Baseline1/Manhattan/WHP/Result/real_query -z ../Experiments/Directed/Baseline1/Manhattan/WHP/Label_size/WHP.size -n 100000 -x 1
+-------------------------------------------------------------------
+2. Query sp distance using WCF-Index
+
+(1) Query SP distance using WCF-Index for Example graph (all-pairs query pair)
+Undirected:
+	bin/query_run -l -d 0 -w 1 -p 2 -b 0 -m 1 -s 0 -i ../Experiments/Undirected/integrated_index_1/Example/Labels/Example.label -v ../Experiments/Undirected/integrated_index_1/Example/Inter_files/Example.lca -y ../Experiments/Undirected/integrated_index_1/Example/Inter_files/Example.isDeleted -f ../Experiments/Undirected/integrated_index_1/Example/Result/verify -a ../Experiments/Undirected/integrated_index_1/Example/Result/verify -x 0 -u 1
+**********************************************************************************************
+Directed:
+	bin/query_run -l -d 1 -w 1 -p 2 -b 0 -m 1 -s 0 -i ../Experiments/Directed/integrated_index_1/Example/Labels/Example.label -v ../Experiments/Directed/integrated_index_1/Example/Inter_files/Example.lca -y ../Experiments/Directed/integrated_index_1/Example/Inter_files/Example.isDeleted -f ../Experiments/Directed/integrated_index_1/Example/Result/verify -a ../Experiments/Directed/integrated_index_1/Example/Result/verify -x 0 -u 1
+
+(2) Query SP distance using WCF-Index for Example graph (input query data)
+Undirected:
+	bin/query_run -l -d 0 -w 1 -p 1 -b 0 -m 1 -s 0 -i ../Experiments/Undirected/integrated_index_1/Example/Labels/Example.label -v ../Experiments/Undirected/integrated_index_1/Example/Inter_files/Example.lca -y ../Experiments/Undirected/integrated_index_1/Example/Inter_files/Example.isDeleted -f ../Experiments/Undirected/integrated_index_1/Example/Result/verify -a ../Experiments/Undirected/integrated_index_1/Example/Result/verify -q ../Datasets/Example/queryFreqDirectory/Example.query -x 1 -n 100000
+**********************************************************************************************
+Directed:
+	bin/query_run -l -d 1 -w 1 -p 1 -b 0 -m 1 -s 0 -i ../Experiments/Directed/integrated_index_1/Example/Labels/Example.label -v ../Experiments/Directed/integrated_index_1/Example/Inter_files/Example.lca -y ../Experiments/Directed/integrated_index_1/Example/Inter_files/Example.isDeleted -f ../Experiments/Directed/integrated_index_1/Example/Result/verify -a ../Experiments/Directed/integrated_index_1/Example/Result/verify -q ../Datasets/Example/queryFreqDirectory/Example.query -x 1 -n 100000
+
+(3) Query SP distance using WCF-Index for Manhattan graph (input real query data)
+Undirected:
+	bin/query_run -l -d 0 -w 1 -p 1 -b 0 -m 1 -s 0 -i ../Experiments/Undirected/integrated_index_1/Manhattan/Labels/Manhattan.label -v ../Experiments/Undirected/integrated_index_1/Manhattan/Inter_files/Manhattan.lca -y ../Experiments/Undirected/integrated_index_1/Manhattan/Inter_files/Manhattan.isDeleted -a ../Experiments/Undirected/integrated_index_1/Manhattan/Result/Manhattan -q ../Datasets/Manhattan/query/day0-cut42.txt -x 1 -n 100000
+**********************************************************************************************
+Directed:
+	bin/query_run -l -d 1 -w 1 -p 1 -b 0 -m 1 -s 0 -i ../Experiments/Directed/integrated_index_1/Manhattan/Labels/Manhattan.label -v ../Experiments/Directed/integrated_index_1/Manhattan/Inter_files/Manhattan.lca -y ../Experiments/Directed/integrated_index_1/Manhattan/Inter_files/Manhattan.isDeleted -a ../Experiments/Directed/integrated_index_1/Manhattan/Result/Manhattan -q ../Datasets/Manhattan/query/day0-cut42.txt -x 1 -n 100000
+
+(4) Query SP distance using WCF_variant-Index for Manhattan graph (input real query data):
+	bin/query_run -l -d 0 -w 1 -p 1 -b 0 -m 2 -s 0 -i ../Experiments/Undirected/integrated_index_2/Manhattan/Labels/Manhattan.label -v ../Experiments/Undirected/integrated_index_2/Manhattan/Inter_files/Manhattan.lca -y ../Experiments/Undirected/integrated_index_2/Manhattan/Inter_files/Manhattan.isDeleted -a ../Experiments/Undirected/integrated_index_2/Manhattan/Result/Manhattan -q ../Datasets/Manhattan/query/day0-cut42.txt -x 1 -n 100000
+**********************************************************************************************
+Directed:
+	bin/query_run -l -d 1 -w 1 -p 1 -b 0 -m 2 -s 0 -i ../Experiments/Directed/integrated_index_2/Manhattan/Labels/Manhattan.label -v ../Experiments/Directed/integrated_index_2/Manhattan/Inter_files/Manhattan.lca -y ../Experiments/Directed/integrated_index_2/Manhattan/Inter_files/Manhattan.isDeleted -a ../Experiments/Directed/integrated_index_2/Manhattan/Result/Manhattan -q ../Datasets/Manhattan/query/day0-cut42.txt -x 1 -n 100000
+
+(5) Batch query SP distance using WCF-Index built by DQN for Manhattan graph (input real query data directory):
+	bin/query_run -l -d 0 -w 1 -p 1 -b 1 -m 1 -s 1 -i ../Experiments/DQN_based_1/Manhattan/Labels/ -v ../Experiments/DQN_based_1/Manhattan/Inter_files/ -y ../Experiments/DQN_based_1/Manhattan/Inter_files/ -a ../Experiments/DQN_based_1/Manhattan/Result/Manhattan_total.performance -q ../Datasets/Manhattan/query_files/1%/ -j day0 -x 1 -u 100
+
+*****************************************Batch Query*******************************
+(1) Batch query SP distances of input query data with BHP for Manhattan graph
+Undirected:
+	bin/query_run -q -d 0 -w 1 -s 0 -b 1 -p 1 -l /home/wanwanvv/workspace/research/Experiments/Baseline1/Manhattan/BHP/Labels/BHP.label -t /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -a /home/wanwanvv/workspace/research/Experiments/Baseline1/Manhattan/BHP/Result/real_query_debug -z /home/wanwanvv/workspace/research/Experiments/Baseline1/Manhattan/BHP/Label_size/BHP.size -n 1000000 -x 1
+
+	bin/query_run -q -d 0 -w 1 -s 1 -b 1 -p 1 -l /home/wanwanvv/workspace/research/Experiments/Baseline1/Manhattan/BHP/Labels/BHP.label -t /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -a /home/wanwanvv/workspace/research/Experiments/Baseline1/Manhattan/BHP/Result/real_query_exp.performance -z /home/wanwanvv/workspace/research/Experiments/Baseline1/Manhattan/BHP/Label_size/BHP.size -n 1000000 -x 1
+**********************************************************************************************
+Directed:
+	bin/query_run -q -d 1 -w 1 -s 0 -b 1 -p 1 -l /home/wanwanvv/workspace/research/Experiments_directed/Baseline1/Manhattan/BHP/Labels/BHP.label -t /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -a /home/wanwanvv/workspace/research/Experiments_directed/Baseline1/Manhattan/BHP/Result/real_query_debug -z /home/wanwanvv/workspace/research/Experiments_directed/Baseline1/Manhattan/BHP/Label_size/BHP.size -n 1000000 -x 1
+
+	bin/query_run -q -d 1 -w 1 -s 1 -b 1 -p 1 -l /home/wanwanvv/workspace/research/Experiments_directed/Baseline1/Manhattan/BHP/Labels/BHP.label -t /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -a /home/wanwanvv/workspace/research/Experiments_directed/Baseline1/Manhattan/BHP/Result/real_query_exp.performance -z /home/wanwanvv/workspace/research/Experiments_directed/Baseline1/Manhattan/BHP/Label_size/BHP.size -n 1000000 -x 1
+
+(2) Batch query SP distance of input real query data using WCF-Index for Manhattan graph
+Undirected:
+	bin/query_run -l -d 0 -w 1 -p 1 -b 1 -m 1 -s 0 -i /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Result/real_query_debug -e /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Label_size/Manhattan.size -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -x 1 -n 1000000
+
+	bin/query_run -l -d 0 -w 1 -p 1 -b 1 -m 1 -s 1 -i /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Result/real_query_exp.performance -e /home/wanwanvv/workspace/research/Experiments/integrated_index_1/Manhattan/Label_size/Manhattan.size -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -x 1 -n 1000000
+**********************************************************************************************
+Directed:
+	bin/query_run -l -d 1 -w 1 -p 1 -b 1 -m 1 -s 0 -i /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Result/real_query_debug -e /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Label_size/Manhattan.size -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -x 1 -n 1000000
+
+	bin/query_run -l -d 1 -w 1 -p 1 -b 1 -m 1 -s 1 -i /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Result/real_query_exp.performance -e /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_1/Manhattan/Label_size/Manhattan.size -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -x 1 -n 1000000
+
+(3) Batch query SP distance of input real query data using WCF_variant-Index for Manhattan graph
+	bin/query_run -l -d 0 -w 1 -p 1 -b 1 -m 2 -s 0 -i /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Result/real_query_debug -e /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Label_size/Manhattan.size -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -x 1 -n 1000000
+
+	bin/query_run -l -d 0 -w 1 -p 1 -b 1 -m 2 -s 1 -i /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Result/real_query_exp.performance -e /home/wanwanvv/workspace/research/Experiments/integrated_index_2/Manhattan/Label_size/Manhattan.size -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -x 1 -n 1000000
+**********************************************************************************************
+Directed:
+	bin/query_run -l -d 1 -w 1 -p 1 -b 1 -m 2 -s 0 -i /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Result/real_query_debug -e /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Label_size/Manhattan.size -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -x 1 -n 1000000
+
+	bin/query_run -l -d 1 -w 1 -p 1 -b 1 -m 2 -s 1 -i /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Labels/Manhattan.label -v /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Inter_files/Manhattan.lca -y /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Inter_files/Manhattan.isDeleted -a /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Result/real_query_exp.performance -e /home/wanwanvv/workspace/research/Experiments_directed/integrated_index_2/Manhattan/Label_size/Manhattan.size -q /home/wanwanvv/workspace/research/Datasets_exp/Manhattan/query -x 1 -n 1000000
+
+*****************************************Experiment Query*******************************
+(1) Query SP distances of input query data with k label sets for Manhattan graph
+Undirected:
+	bin/query_run -q -d 0 -w 1 -s 4 -b 0 -p 1 -l ../exp7_spatial_temporal_rl-tip_mix/Undirected/Labels -z ../exp7_spatial_temporal_rl-tip_mix/Undirected/Label_size -t ../Datasets/Manhattan/query/1d/day10-cut0.txt -a ../exp7_spatial_temporal_rl-tip_mix/Undirected/Result/day10-cut0.result -n 100000 -x 1 -u 2
+**********************************************************************************************
+Directed:
+	bin/query_run -q -d 1 -w 1 -s 4 -b 0 -p 1 -l ../exp7_spatial_temporal_rl-tip_mix/Directed/Labels -z ../exp7_spatial_temporal_rl-tip_mix/Directed/Label_size -t ../Datasets/Manhattan/query/1d/day10-cut0.txt -a ../exp7_spatial_temporal_rl-tip_mix/Directed/Result/day10-cut0.result -n 100000 -x 1 -u 2
+
+(2) Query SP distances of different types queries
+Undirected:
+	bin/query_run -l -d 0 -w 1 -p 0 -m 1 -s 4 -i ../exp8_spatial_query_time_new/Undirected/WCF_1/Labels/Manhattan.label -v ../exp8_spatial_query_time_new/Undirected/WCF_1/Inter_files/Manhattan.lca -y ../exp8_spatial_query_time_new/Undirected/WCF_1/Inter_files/Manhattan.isDeleted -a ../exp8_spatial_query_time_new/Undirected/WCF_1/Result/differ_types/Manhattan.qtime -e ../exp8_spatial_query_time_new/Undirected/WCF_1/Label_size/Manhattan.size -x 1 -n 10000
+
+	bin/query_run -l -d 0 -w 1 -p 0 -m 2 -s 4 -i ../exp8_spatial_query_time_new/Undirected/WCF_2/Labels/Manhattan.label -v ../exp8_spatial_query_time_new/Undirected/WCF_2/Inter_files/Manhattan.lca -y ../exp8_spatial_query_time_new/Undirected/WCF_2/Inter_files/Manhattan.isDeleted -a ../exp8_spatial_query_time_new/Undirected/WCF_2/Result/differ_types/Manhattan.qtime -e ../exp8_spatial_query_time_new/Undirected/WCF_2/Label_size/Manhattan.size -x 1 -n 10000
+**********************************************************************************************
+Directed:
+	bin/query_run -l -d 1 -w 1 -p 0 -m 1 -s 4 -i ../exp8_spatial_query_time_new/Directed/WCF_1/Labels/Manhattan.label -v ../exp8_spatial_query_time_new/Directed/WCF_1/Inter_files/Manhattan.lca -y ../exp8_spatial_query_time_new/Directed/WCF_1/Inter_files/Manhattan.isDeleted -a ../exp8_spatial_query_time_new/Directed/WCF_1/Result/differ_types/Manhattan.qtime -e ../exp8_spatial_query_time_new/Directed/WCF_1/Label_size/Manhattan.size -x 1 -n 10000
+
+	bin/query_run -l -d 1 -w 1 -p 0 -m 2 -s 4 -i ../exp8_spatial_query_time_new/Directed/WCF_2/Labels/Manhattan.label -v ../exp8_spatial_query_time_new/Directed/WCF_2/Inter_files/Manhattan.lca -y ../exp8_spatial_query_time_new/Directed/WCF_2/Inter_files/Manhattan.isDeleted -a ../exp8_spatial_query_time_new/Directed/WCF_2/Result/differ_types/Manhattan.qtime -e ../exp8_spatial_query_time_new/Directed/WCF_2/Label_size/Manhattan.size -x 1 -n 10000
+
+(2) Query SP distances of different distributions
+Undirected:
+	bin/query_run -l -d 0 -w 1 -p 1 -m 1 -s 4 -i ../exp8_spatial_query_time_new/Undirected/WCF_1/Labels/Manhattan.label -v ../exp8_spatial_query_time_new/Undirected/WCF_1/Inter_files/Manhattan.lca -y ../exp8_spatial_query_time_new/Undirected/WCF_1/Inter_files/Manhattan.isDeleted -a ../exp8_spatial_query_time_new/Undirected/WCF_1/Result/differ_distributions/Manhattan.qtime -e ../exp8_spatial_query_time_new/Undirected/WCF_1/Label_size/Manhattan.size -q ../Datasets/Manhattan/query/day10-cut0.txt -x 1 -n 10000
+
+	bin/query_run -l -d 0 -w 1 -p 1 -m 2 -s 4 -i ../exp8_spatial_query_time_new/Undirected/WCF_2/Labels/Manhattan.label -v ../exp8_spatial_query_time_new/Undirected/WCF_2/Inter_files/Manhattan.lca -y ../exp8_spatial_query_time_new/Undirected/WCF_2/Inter_files/Manhattan.isDeleted -a ../exp8_spatial_query_time_new/Undirected/WCF_2/Result/differ_distributions/Manhattan.qtime -e ../exp8_spatial_query_time_new/Undirected/WCF_2/Label_size/Manhattan.size -q ../Datasets/Manhattan/query/day10-cut0.txt -x 1 -n 10000
+**********************************************************************************************
+Directed:
+	bin/query_run -l -d 1 -w 1 -p 1 -m 1 -s 4 -i ../exp8_spatial_query_time_new/Directed/WCF_1/Labels/Manhattan.label -v ../exp8_spatial_query_time_new/Directed/WCF_1/Inter_files/Manhattan.lca -y ../exp8_spatial_query_time_new/Directed/WCF_1/Inter_files/Manhattan.isDeleted -a ../exp8_spatial_query_time_new/Directed/WCF_1/Result/differ_distributions/Manhattan.qtime -e ../exp8_spatial_query_time_new/Directed/WCF_1/Label_size/Manhattan.size -q ../Datasets/Manhattan/query/day10-cut0.txt -x 1 -n 10000
+
+	bin/query_run -l -d 1 -w 1 -p 1 -m 2 -s 4 -i ../exp8_spatial_query_time_new/Directed/WCF_2/Labels/Manhattan.label -v ../exp8_spatial_query_time_new/Directed/WCF_2/Inter_files/Manhattan.lca -y ../exp8_spatial_query_time_new/Directed/WCF_2/Inter_files/Manhattan.isDeleted -a ../exp8_spatial_query_time_new/Directed/WCF_2/Result/differ_distributions/Manhattan.qtime -e ../exp8_spatial_query_time_new/Directed/WCF_2/Label_size/Manhattan.size -q ../Datasets/Manhattan/query/day10-cut0.txt -x 1 -n 10000
