@@ -4,7 +4,7 @@ Source codes of **ICDE-2022** research paper "Workload-Aware Shortest Path Dista
 # Introduction
 论文《负载感知的路网最短路径查询》中用C++实现的主要算法和流程框架<br>
 <p align="center">
-<img src=".\img\framework.png" height = "360" alt="" align=center />
+<img src=".\img\framework.png" height = "200" alt="" align=center />
 <br><br>
 <b>Figure 1.</b> The architecture of WCF.
 </p>
@@ -18,7 +18,7 @@ Source codes of **ICDE-2022** research paper "Workload-Aware Shortest Path Dista
 * 时间局部性查询具有时间连续性
 
 <p align="center">
-<img src=".\img\motivation.png" height = "360" alt="" align=center />
+<img src=".\img\motivation.png" height = "200" alt="" align=center />
 <br><br>
 <b>Figure 2.</b> Motivation.
 </p>
@@ -61,7 +61,7 @@ Source codes of **ICDE-2022** research paper "Workload-Aware Shortest Path Dista
       + 分块技术
       
 <p align="center">
-<img src=".\img\tree.png" height = "360" alt="" align=center />
+<img src=".\img\tree.png" height = "300" alt="" align=center />
 <br><br>
 <b>Figure 3.</b> 树分解.
 </p>
@@ -78,7 +78,7 @@ Source codes of **ICDE-2022** research paper "Workload-Aware Shortest Path Dista
       + 最短路径距离查询
 
 <p align="center">
-<img src=".\img\wcf.png" height = "360" alt="" align=center />
+<img src=".\img\wcf.png" height = "200" alt="" align=center />
 <br><br>
 <b>Figure 4.</b> Core-forest结构.
 </p>
@@ -91,7 +91,7 @@ Source codes of **ICDE-2022** research paper "Workload-Aware Shortest Path Dista
 定义在graph.h中，可以读取有权/无权和有向/无向图，提供去除自环和重边功能，为了优化空间和访问速度，将所有边(u,v,w)按照起始点u排序依次存储在一维数组edges中，用二维邻接表adj只存储每个节点最后一条邻接边在edges中的索引位置
 
 <p align="center">
-<img src=".\img\graph.png" height = "360" alt="" align=center />
+<img src=".\img\graph.png" height = "200" alt="" align=center />
 <br><br>
 <b>Figure 5.</b> Graph example.
 </p>
