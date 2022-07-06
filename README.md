@@ -4,7 +4,7 @@ Source codes of **ICDE-2022** research paper "Workload-Aware Shortest Path Dista
 # Introduction
 论文《负载感知的路网最短路径查询》中用C++实现的主要算法和流程框架<br>
 <p align="center">
-<img src=".\img\framework.png" height = "200" alt="" align=center />
+<img src=".\img\framework.png" height = "180" alt="" align=center />
 <br><br>
 <b>Figure 1.</b> The architecture of WCF.
 </p>
@@ -18,7 +18,7 @@ Source codes of **ICDE-2022** research paper "Workload-Aware Shortest Path Dista
 * 时间局部性查询具有时间连续性
 
 <p align="center">
-<img src=".\img\motivation.png" height = "200" alt="" align=center />
+<img src=".\img\motivation.png" height = "180" alt="" align=center />
 <br><br>
 <b>Figure 2.</b> Motivation.
 </p>
